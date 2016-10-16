@@ -6,4 +6,8 @@ and writing of both digital and analog pins as well as support for both stepper 
 be taken in configuring the settings for the servo motor with rudimentary limits placed within the code based
 on most servo motors.
 
+Take note of the settings required to enable and use Ethernet connectivity. Bluetooth is supported and tested
+with both HC-05 and HC-06 modules. Remember, the bluetooth module will likely need to be disconnected as you
+load code to your Arduino as you'll likely find conflicts between the USB serial and the module.
+
 Several examples and additional documentation can be found at [website](https://joaoapps.com/autoarduino/)
