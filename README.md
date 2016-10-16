@@ -3,8 +3,7 @@ Sketch used with the [AutoArduino Android app](https://play.google.com/store/app
 
 This sketch provides the basis for the communication with the AutoArduino app and allows for the reading
 and writing of both digital and analog pins as well as support for both stepper and servo motors. Care must
-be taken in configuring the settings for the servo motor with rudimentary limits placed within the code based
-on most servo motors.
+be taken in configuring the range settings for the particular servo motor used with the app.
 
 Take note of the settings required to enable and use Ethernet connectivity. Bluetooth is supported and tested
 with both HC-05 and HC-06 modules. Remember, the bluetooth module will likely need to be disconnected as you
