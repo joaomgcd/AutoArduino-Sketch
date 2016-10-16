@@ -8,44 +8,15 @@ void customLoop(){
 byte mac[] = {0xDE, 0xAD, 0xBE, 0xEF, 0xFE, 0xED};
 byte ip[] = { 192, 168, 12, 100};
 int port = 80;
-bool useEthernet = true;
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+bool useEthernet = false;
 
 
 
 //Library to easily connect stepper motors
 #include <Stepper.h>
+//Library for driving servos
+#include <Servo.h>
+#include <pins_arduino.h>
 
 //Ethernet library
 #include <SPI.h>
@@ -59,6 +30,8 @@ volatile bool shouldReads[] = {false,false};
 unsigned long lastChanges[] = {0l,0l};
 byte lastValues[] = {HIGH,HIGH};
 byte lastPinMode[] = {INPUT_PULLUP,INPUT_PULLUP,OUTPUT,OUTPUT,OUTPUT,OUTPUT,OUTPUT,OUTPUT,OUTPUT,OUTPUT,OUTPUT,OUTPUT};
+
+Servo servo1;
 
 //Runs when pin 2 changes
 void pin2Changed() {
@@ -86,8 +59,11 @@ void setup() {
   //Pin 2 e 3 are configured for input so that AutoArduino can be alerted when they change
   pinMode (3, INPUT_PULLUP);
   pinMode (2, INPUT_PULLUP);
-  attachInterrupt(digitalPinToInterrupt(2), pin2Changed, CHANGE);
-  attachInterrupt(digitalPinToInterrupt(3), pin3Changed, CHANGE);
+//  attachInterrupt(digitalPinToInterrupt(2), pin2Changed, CHANGE);
+//  attachInterrupt(digitalPinToInterrupt(3), pin3Changed, CHANGE);
+//Codebender.cc apparently doesn't handle digitalPinToInterrupt
+  attachInterrupt(2, pin2Changed, CHANGE);
+  attachInterrupt(3, pin3Changed, CHANGE);
 
   if(useEthernet){
     Ethernet.begin(mac,ip);
@@ -272,8 +248,8 @@ void handleSerial(){
 
 //returns the number of values each mode expects
 int getModeValues(char mode){
-  //digital and analog write is 2
-  if(mode == 'd' || mode == 'a'){
+  //servo, digital and analog write is 2
+  if(mode == 'd' || mode == 'a' || mode == 's'){
     return 2;
   }else 
   //digital and analog read is 1
@@ -297,6 +273,8 @@ void handleCommand(char mode, int values[]){
     handleReadAnalog(values);
   }else if(mode == 'm'){
     handleStepper(values);
+  }else if(mode == 's'){
+    handleServo(values);
   }
 }
 void handleDigitalWrite(int values[]){
@@ -357,6 +335,13 @@ void handleStepper(int values[]){
   Stepper motor(motorSteps, pin1, pin2, pin3, pin4);      
   motor.setSpeed(motorSpeed);
   motor.step(stepsToTake);
+}
+void handleServo(int values[]){
+  int pin = values[0];
+  int pos = values[1];
+  servo1.attach(pin);
+  if(pos<2300 && pos>500)
+     servo1.writeMicroseconds(pos);
 }
 //Changes pin mode (INPUT to OUTPUT or vice-versa)
 void changePinMode(int pin, byte mode){
